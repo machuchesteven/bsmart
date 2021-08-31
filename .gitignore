@@ -1,0 +1,10 @@
+#migrations
+/lms/migrations
+
+#databases
+.sqlite3
+
+#pycache
+/bsmart/__pycache__
+
+
