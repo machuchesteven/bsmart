@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class Department(models.Model):
     class Meta:
-        ordering = "name"
+        ordering = ["name"]
     name = models.CharField(max_length=32, blank=True, null=True)
     hod = models.OneToOneField(User, on_delete=models.DO_NOTHING)
     date_created = models.DateField(auto_now_add=True)
@@ -15,17 +15,26 @@ class Department(models.Model):
         return self.name
 
 
+def get_default_department(self):
+    return Department.objects.get(1)
+
+
 class Program(models.Model):
     class Meta:
         verbose_name_plural = "Programmes"
-        ordering = "name"
+        ordering = ["name"]
     name = models.CharField(max_length=128, blank=True, null=True)
-    department = models.ForeignKey(Department, on_delete=models.SET_NULL)
+    department = models.ForeignKey(
+        Department, on_delete=models.SET_DEFAULT, default=get_default_department)
     duration = models.DurationField()
     intake = models.PositiveIntegerField()
 
     def __str__(self):
         return self.name + " The " + str(intake)
+
+
+def get_default_program(self):
+    return Program.objects.get(id=1)
 
 
 class Teacher(models.Model):
@@ -34,7 +43,8 @@ class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=128, blank=True, null=True)
     education_level = models.CharField(max_length=32, blank=True, null=True)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    department = models.ForeignKey(
+        Department, on_delete=models.SET_DEFAULT, default=get_default_department)
 
     def __str__(self):
         return self.full_name
@@ -44,17 +54,15 @@ def get_default_teacher(self):
     return Teacher.objects.get(id=1)
 
 
-def get_default_program(self):
-    return Program.objects.get(id=1)
-
-
 class Course(models.Model):
     class Meta:
         ordering = ["course_code"]
     name = models.CharField(max_length=64, unique=True)
     course_code = models.CharField(max_length=5, unique=True)
-    teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL)
-    program = models.ForeignKey(Program, on_delete=models.SET_NULL)
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.SET_DEFAULT, default=get_default_teacher)
+    program = models.ForeignKey(
+        Program, on_delete=models.SET_DEFAULT, default=get_default_program)
 
     def __str__(self):
         return self.name
@@ -62,7 +70,7 @@ class Course(models.Model):
 
 class Student(models.Model):
     class Meta:
-        ordering = ["name"]
+        ordering = ["full_name"]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=128, blank=True, null=True)
     program = models.ForeignKey(
