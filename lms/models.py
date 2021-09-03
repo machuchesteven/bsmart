@@ -15,26 +15,18 @@ class Department(models.Model):
         return self.name
 
 
-def get_default_department(self):
-    return Department.objects.get(1)
-
-
 class Program(models.Model):
     class Meta:
         verbose_name_plural = "Programmes"
         ordering = ["name"]
     name = models.CharField(max_length=128, blank=True, null=True)
     department = models.ForeignKey(
-        Department, on_delete=models.SET_DEFAULT, default=get_default_department)
+        Department, on_delete=models.SET_DEFAULT, default=1)
     duration = models.DurationField()
     intake = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.name + " The " + str(intake)
-
-
-def get_default_program(self):
-    return Program.objects.get(id=1)
+        return self.name + " : " + str(self.intake) + " intake"
 
 
 class Teacher(models.Model):
@@ -44,14 +36,10 @@ class Teacher(models.Model):
     full_name = models.CharField(max_length=128, blank=True, null=True)
     education_level = models.CharField(max_length=32, blank=True, null=True)
     department = models.ForeignKey(
-        Department, on_delete=models.SET_DEFAULT, default=get_default_department)
+        Department, on_delete=models.SET_DEFAULT, default=1)
 
     def __str__(self):
         return self.full_name
-
-
-def get_default_teacher(self):
-    return Teacher.objects.get(id=1)
 
 
 class Course(models.Model):
@@ -60,9 +48,9 @@ class Course(models.Model):
     name = models.CharField(max_length=64, unique=True)
     course_code = models.CharField(max_length=5, unique=True)
     teacher = models.ForeignKey(
-        Teacher, on_delete=models.SET_DEFAULT, default=get_default_teacher)
+        Teacher, on_delete=models.SET_DEFAULT, default=1)
     program = models.ForeignKey(
-        Program, on_delete=models.SET_DEFAULT, default=get_default_program)
+        Program, on_delete=models.SET_DEFAULT, default=1)
 
     def __str__(self):
         return self.name
@@ -74,7 +62,7 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=128, blank=True, null=True)
     program = models.ForeignKey(
-        Program, default=get_default_program, on_delete=models.SET_DEFAULT)
+        Program, default=1, on_delete=models.SET_DEFAULT)
     joined = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True)
 
@@ -88,7 +76,7 @@ class Lesson(models.Model):
     title = models.CharField(max_length=128, blank=True, null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     teacher = models.ForeignKey(
-        Teacher, default=get_default_teacher, on_delete=models.SET_DEFAULT)
+        Teacher, default=1, on_delete=models.SET_DEFAULT)
     notes = models.FileField(upload_to='notes', blank=True, null=True)
     delivery_date = models.DateTimeField()
 
